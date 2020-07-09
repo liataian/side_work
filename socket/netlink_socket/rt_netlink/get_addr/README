@@ -1,0 +1,2 @@
+使用RTM_GETADDR除了可以拿到ip address外，還會包含RTM_GETLINK拿得到的link layer的info (待確認)
+但使用RTM_GETLINK只能拿到link layer的info，拿不到ip address
