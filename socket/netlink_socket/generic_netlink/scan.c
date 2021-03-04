@@ -307,7 +307,7 @@ int do_scan_trigger(struct nl_sock *socket, int if_index, int driver_id) {
     struct nl_cb *cb;
     struct nl_msg *ssids_to_scan;
     int err;
-	int error;
+    int error;
     int ret;
     int mcid = nl_get_multicast_id(socket, "nl80211", "scan");
     nl_socket_add_membership(socket, mcid);  // Without this, callback_trigger() won't be called.
@@ -419,19 +419,21 @@ int do_scan_trigger(struct nl_sock *socket, int if_index, int driver_id) {
 
 int main() {
     struct nl_sock *socket = nl_socket_alloc();
-	//Init and bind
+    //Init and bind
     genl_connect(socket);
-	int err;
-	int ret;
+    int err;
+    int ret;
     int driver_id = genl_ctrl_resolve(socket, "nl80211");
     unsigned int if_index = if_nametoindex("wlan0"); //interface
-	printf("interface index=%u\n", if_index);
+
+    printf("interface index=%u\n", if_index);
     // Issue NL80211_CMD_TRIGGER_SCAN to the kernel and wait for it to finish.
     err = do_scan_trigger(socket, if_index, driver_id);
     if (err != 0) {
         printf("do_scan_trigger() failed with %d.\n", err);
         return err;
     }
+
     struct nl_msg *msg = nlmsg_alloc();
     //Add command to get scan result
     genlmsg_put(msg, 0, 0, driver_id, 0, NLM_F_DUMP, NL80211_CMD_GET_SCAN, 0);
