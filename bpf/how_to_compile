@@ -1,0 +1,5 @@
+//compile BPF program, build xdp_prog.o
+clang -O2 -g -target bpf -c xdp_prog.c -o xdp_prog.o
+
+//compile BPF program loader, load xdp_prog.o
+gcc -O2 -g -Wall prog_loader.c -o prog_loader -lbpf
