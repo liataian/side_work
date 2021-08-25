@@ -3,3 +3,20 @@ clang -O2 -g -target bpf -c xdp_prog.c -o xdp_prog.o
 
 //compile BPF program loader, load xdp_prog.o
 gcc -O2 -g -Wall prog_loader.c -o prog_loader -lbpf
+
+//Load and attach BPF program (Map created in xdp_prog.o)
+sudo ./prog_loader
+
+//detach BPF program
+sudo ip link set dev wlan0 xdp off
+
+//Observe BPF map status
+vincent@x1carbon:~/side_work/local_work/bpf$ sudo bpftool map list
+50: hash  name drop_icmp_map  flags 0x0
+	key 8B  value 16B  max_entries 256  memlock 24576B
+
+vincent@x1carbon:~/side_work/local_work/bpf$ sudo bpftool map dump id 50
+key: c0 a8 32 1e c0 a8 32 a0  value: 80 18 00 00 00 00 00 00  40 00 00 00 00 00 00 00
+key: c0 a8 32 71 c0 a8 32 a0  value: 7c 3c 00 00 00 00 00 00  9e 00 00 00 00 00 00 00
+Found 2 elements
+

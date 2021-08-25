@@ -29,12 +29,12 @@ static __always_inline int drop_icmp(struct xdp_md *ctx) {
     void *data_end = (void*)(long)ctx->data_end;
     struct ethhdr *eth = data_start;
 
-    if ((void*)(eth+1) > data_end) //ethernet header must smaller than whole data
+    if ((void*)(eth+1) > data_end) //ethernet header must smaller than whole data, 沒有這行check會編譯失敗
 	    return XDP_ABORTED;
 
     if (eth->h_proto == bpf_htons(ETH_P_IP)) { //check if there is IP packet in ethernet frame
         struct iphdr *iph = (struct iphdr*)(eth+1);
-	if ((void*)(iph+1) > data_end) //IP header must smaller than rest of data
+	if ((void*)(iph+1) > data_end) //IP header must smaller than rest of data, 沒有這行check會編譯失敗
 		return XDP_ABORTED;
         //bpf_printk("Got a packet\n");
 
@@ -43,6 +43,7 @@ static __always_inline int drop_icmp(struct xdp_md *ctx) {
 	    KEY key;
 	    key.src = iph->saddr;
 	    key.dst = iph->daddr;
+	    //192.168.1.78(little endian) -> 0xC0A8014E in hex -> 0x4E0180C0(big endian) -> 1308721344
 	    //還沒從network byte order轉成host byte order
 	    //因此192.168.50.22目前會是22.50.168.192
 	    bpf_printk("Drop ICMP packet sent from %d.%d.%d\n",
