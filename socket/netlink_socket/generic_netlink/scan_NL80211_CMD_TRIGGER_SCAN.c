@@ -58,7 +58,7 @@ int callback_of_get_scan_result(struct nl_msg *msg, void *arg) {
     int signal_level = 0;
     uint32_t last_seen = 0; //ms
     uint32_t static scan_result_count = 1;
-    char ssid[32]; //for parsing ssid in IE
+    char ssid[64]; //for parsing ssid in IE
     struct nlattr *tb[NL80211_ATTR_MAX + 1]; //用來存第一層nla
     struct nlattr *bss[NL80211_BSS_MAX + 1]; //用來存第二層nla (因為bss屬於nested nla)
 
@@ -97,7 +97,7 @@ int callback_of_get_scan_result(struct nl_msg *msg, void *arg) {
     if (bss[NL80211_BSS_INFORMATION_ELEMENTS]) {
         ie = nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]);
 	ie_len = nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]);
-	//printf("IE[0]=%u, IE[1]=%u, ie_len=%lu ", ie[0], ie[1], ie_len);
+	//printf("ie[0]=%u, ie[1]=%u, ie_len=%lu ", ie[0], ie[1], ie_len);
         //SSID名稱是從第3個byte開始，長度為是第2個byte紀錄(也就是ie[1])，需要額外包含"\0"
 	snprintf(ssid, ie[1]+1, "%s", ie+2);
 	printf("SSID=%s, ", ssid);
@@ -503,7 +503,6 @@ int main() {
         return ret;
     }
     printf("Get scan result done.\n");
-
     //nl_recvmsgs_default使用的是socket的default cb! 是從nl_socket_modify_cb設定的
     ret = nl_recvmsgs_default(socket);
 
