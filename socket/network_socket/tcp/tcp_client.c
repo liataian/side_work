@@ -11,38 +11,54 @@
 int main() {
 	struct addrinfo client_info, *remote_info;
 	int sockfd;
-    char *msg = "Hello this is client.......YAYAYA";
+	char *msg = "Hello this is client.......YAYAYA";
 	int msglen = strlen(msg);
 	int bytesent;
+	int status;
 
 	memset(&client_info, 0, sizeof(client_info));
 	client_info.ai_family = AF_INET;
 	client_info.ai_socktype = SOCK_STREAM;
 	//int errno = getaddrinfo("www.google.com", "5566", &client_info, &remote_info); //This will send DNS query
-	int errno = getaddrinfo("10.96.144.9", "5566", &client_info, &remote_info);
-	if (errno) printf("err=%s\n", gai_strerror(errno));
+	if (getaddrinfo("localhost", "5566", &client_info, &remote_info) != 0) {
+	   fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+	   return -1;
+	}
 	
 	//要建立socket前可以都先用getaddrinfo來填充remote端資訊
 	sockfd = socket(remote_info->ai_family, remote_info->ai_socktype, remote_info->ai_protocol);
-	int err = connect(sockfd, remote_info->ai_addr, remote_info->ai_addrlen);
+
+	int retry = 3;
+	int err = 0;
+	while (retry) {
+		err = connect(sockfd, remote_info->ai_addr, remote_info->ai_addrlen);
+		if (err != 0) {
+		    retry--;
+                    printf("Failed to connect to server, retry remain %d time\n", retry);
+		    usleep(1000000);
+		} else {
+		    break;
+		}
+	}
 
 	int count = 10;
+
 	if (!err) {
-		while(count>0) {
-		    bytesent = send(sockfd, msg, msglen, 0);
-		    if (bytesent != msglen) {
-		        printf("Send msg incompletely, only sent %d bytes.\n", bytesent);
-		    }
-		    printf("Send msg (len=%d)done...\n", msglen);
-			count--;
-			usleep(3000000);
+            while(count > 0) {
+                bytesent = send(sockfd, msg, msglen, 0);
+		if (bytesent != msglen) {
+                    printf("Send msg incompletely, only sent %d bytes.\n", bytesent);
 		}
+		printf("Send msg (len=%d)done...\n", msglen);
+		    count--;
+		    usleep(1000000);
+	    }
 	} else {
 	    return -1;
     }
     close(sockfd);
     freeaddrinfo(remote_info);
-	return 0;
+    return 0;
 }
 
 #if 0
