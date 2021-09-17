@@ -1,0 +1,5 @@
+COMPILE:
+gcc multicast_SIOCGIFHWADDR.c utils.c -o multicast_SIOCGIFHWADDR
+
+RUN:
+sudo ./multicast_SIOCGIFHWADDR wlan0 01:00:5e:7f:ff:fa 0x9000
