@@ -70,11 +70,14 @@ int main(int argc, char *argv[]) {
 	       resp_len = recv(new_sockfd, resp, sizeof(resp), 0);
 	       if (resp_len != 0) {
                    printf("Receive message (len=%d) from client: %s\n", resp_len, resp);
+	       }
+#if 0 //keep going
 	       } else {
                    printf("No message from client.\n");
 		   close(new_sockfd);
 		   break;
 	       }
+#endif
 	   }
    }
    printf("Server Done\n");

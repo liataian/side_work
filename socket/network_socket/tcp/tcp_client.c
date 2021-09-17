@@ -11,10 +11,11 @@
 int main() {
 	struct addrinfo client_info, *remote_info;
 	int sockfd;
-	char *msg = "Hello this is client.......YAYAYA";
-	int msglen = strlen(msg);
 	int bytesent;
 	int status;
+	pid_t mypid = getpid();
+	char msg[64];
+	int msglen = snprintf(msg, sizeof(msg), "%s %d\n", "Hello this is msg from client process: ", mypid);
 
 	memset(&client_info, 0, sizeof(client_info));
 	client_info.ai_family = AF_INET;
