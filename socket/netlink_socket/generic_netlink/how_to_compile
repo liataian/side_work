@@ -1,0 +1,3 @@
+gcc scan_NL80211_CMD_TRIGGER_SCAN.c -o ./bin/scan_NL80211_CMD_TRIGGER_SCAN -I/usr/include/libnl3 -L/lib/x86_64-linux-gnu/ -lnl-3 -lnl-genl-3 -g -Wall -O3
+
+其實可以不要加-L了，只要在 /etc/ld.so.conf.d/*.conf 中有存在 /lib/x86_64-linux-gnu 這個路徑就好
